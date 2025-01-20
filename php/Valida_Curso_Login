@@ -1,40 +1,42 @@
 add_action('template_redirect', 'restrict_access_to_courses');
 
 function restrict_access_to_courses() {
-    // URLs de los cursos a proteger
-    $restricted_urls = array('/cpt_curs', '/cpt_curso'); // Cambia por los slugs reales de tus cursos
+    // URLs de los cursos a proteger (deberían ser slugs exactos)
+    $restricted_urls = array('/c', '/c');
 
-    // Verificar si estamos en alguna de las URLs específicas
-    foreach ($restricted_urls as $restricted_url) {
-        if (strpos($_SERVER['REQUEST_URI'], $restricted_url) !== false) {
-            // Verificar si el usuario está logueado
-            if (!is_user_logged_in()) {
-                // Redirigir directamente a la página "Mi Cuenta" si el usuario no está logueado
-                wp_redirect('https://valeriacor'); 
-                exit;
-            }
+    // Obtener la URI actual
+    $current_uri = $_SERVER['REQUEST_URI'];
 
-            // Obtener el usuario actual
-            $current_user = wp_get_current_user();
+    // Verificar si la URI actual está en las URLs restringidas
+    if (array_intersect($restricted_urls, [$current_uri])) {
+        // Verificar si el usuario está logueado
+        if (!is_user_logged_in()) {
+            wp_redirect('h://v');
+            exit;
+        }
 
-            // IDs de los productos (cursos)
-            $course_ids = array(6_27, 803); // Cambia estos IDs por los IDs reales de tus productos en WooCommerce
+        // Obtener el usuario actual
+        $current_user = wp_get_current_user();
 
-            // Verificar si el usuario compró alguno de los cursos
-            if (!has_user_purchased_any_course($current_user->ID, $coure_ids)) {
-                wp_redirect(home_url('/mi-cuenta')); // Redirige a la página de "Mi Cuenta" si no ha comprado los cursos
-                exit;
-            }
+        // IDs de los productos (cursos)
+        $course_ids = array(6, 8);
+
+        // Verificar si el usuario ha comprado alguno de los cursos
+        if (!has_user_purchased_any_course($current_user->ID, $course_ids)) {
+            wp_redirect(home_url('/m'));
+            exit;
         }
     }
 }
 
-// Función para verificar si el usuario compró alguno de los cursos
+// Función para verificar si el usuario ha comprado alguno de los cursos
 function has_user_purchased_any_course($user_id, $product_ids) {
     if (class_exists('WooCommerce')) {
+        // Obtener las órdenes del usuario con estado "completado" o "procesando"
         $orders = wc_get_orders(array(
             'customer_id' => $user_id,
-            'status'      => array('complete', 'processin'), // Órdenes completadas o en proceso
+            'status'      => array('completed', 'processing'),
+            'limit'       => -1 // Obtener todas las órdenes sin limitación
         ));
 
         foreach ($orders as $order) {
@@ -45,6 +47,5 @@ function has_user_purchased_any_course($user_id, $product_ids) {
             }
         }
     }
-    return false; // El usuario no compró ninguno de los cursos
+    return false; // El usuario no ha comprado ninguno de los cursos
 }
-
