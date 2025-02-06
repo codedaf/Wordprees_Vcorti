@@ -1,0 +1,55 @@
+add_action('template_redirect', 'restrict_access_to_courses');
+
+function restrict_access_to_courses() {
+    // URLs de los cursos a proteger (deberían ser slugs exactos)
+    $restricted_urls = array(
+        trailingslashit('/cpt_cursos/autoregulate/'), 
+        trailingslashit('/cpt_cursos/mision2025/'), 
+        trailingslashit('/cpt_cursos/mision-2025-gratuito/')  // Agregar el slug del curso gratuito aquí
+    );
+
+    // Obtener la URI actual
+    $current_uri = trailingslashit($_SERVER['REQUEST_URI']); // Normaliza la URL actual con barra al final
+
+    // Verificar si la URI actual está en las URLs restringidas
+    if (in_array($current_uri, $restricted_urls)) {
+        // Verificar si el usuario está logueado
+        if (!is_user_logged_in()) {
+            wp_redirect('https://valeriacorti.pagix.online/mi-cuenta/');  // Redirigir a la página de login si no está logueado
+            exit;
+        }
+
+        // Obtener el usuario actual
+        $current_user = wp_get_current_user();
+
+        // IDs de los productos (cursos)
+        $course_ids = array(627, 803, 1468); // Agregar el ID del curso gratuito aquí
+
+        // Verificar si el usuario ha comprado alguno de los cursos
+        if (!has_user_purchased_any_course($current_user->ID, $course_ids)) {
+            wp_redirect(home_url('/mi-cuenta'));  // Redirigir a la página de cuenta si no ha comprado el curso
+            exit;
+        }
+    }
+}
+
+// Función para verificar si el usuario ha comprado alguno de los cursos
+function has_user_purchased_any_course($user_id, $product_ids) {
+    if (class_exists('WooCommerce')) {
+        // Obtener las órdenes del usuario con estado "completado" o "procesando"
+        $orders = wc_get_orders(array(
+            'customer_id' => $user_id,
+            'status'      => array('completed', 'processing'),
+            'limit'       => -1 // Obtener todas las órdenes sin limitación
+        ));
+
+        foreach ($orders as $order) {
+            foreach ($order->get_items() as $item) {
+                if (in_array($item->get_product_id(), $product_ids)) {
+                    return true; // El usuario compró alguno de los cursos
+                }
+            }
+        }
+    }
+    return false; // El usuario no ha comprado ninguno de los cursos
+}
