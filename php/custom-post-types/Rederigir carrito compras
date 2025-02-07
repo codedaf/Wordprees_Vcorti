@@ -1,0 +1,5 @@
+
+function redirigir_al_carrito_woocommerce() {
+    return wc_get_cart_url(); // Obtiene la URL del carrito
+}
+add_filter( 'woocommerce_add_to_cart_redirect', 'redirigir_al_carrito_woocommerce' );
