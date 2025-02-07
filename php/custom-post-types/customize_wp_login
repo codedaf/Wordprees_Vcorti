@@ -1,0 +1,45 @@
+function customize_wp_login() {
+    // Estilos personalizados para el formulario de login
+    echo '<style type="text/css">
+        body.login div#login::before {
+            content: "Login"; /* Título */
+            display: block;
+            text-align: center;
+            color: red;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        body.login div#login {
+            position: relative;
+        }
+        body.login div#login h1 a {
+            background-image: url("https://valeriacorti.pagix.online/path-to-your-logo.png");
+            background-size: contain;
+            width: 300px;
+            height: 80px;
+        }
+        body.login {
+            background-color: #f3f3f3; /* Cambiar fondo */
+        }
+        body.login form {
+            border-radius: 10px; /* Bordes redondeados */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            padding-top: 20px;
+            position: relative;
+        }
+    </style>';
+}
+add_action('login_enqueue_scripts', 'customize_wp_login');
+
+// Cambiar URL del logo
+function customize_wp_login_url() {
+    return home_url(); // Cambia a la URL de tu sitio
+}
+add_filter('login_headerurl', 'customize_wp_login_url');
+
+// Cambiar texto del logo
+function customize_wp_login_title() {
+    return 'Regresa a Valeria Corti';
+}
+add_filter('login_headertext', 'customize_wp_login_title');
