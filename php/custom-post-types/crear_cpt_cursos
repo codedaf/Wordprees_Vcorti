@@ -1,0 +1,67 @@
+if ( ! function_exists('crear_cpt_cursos') ) {
+
+    // Function to register a Custom Post Type for "Cursos"
+    function crear_cpt_cursos() {
+
+        // Labels for the "Cursos" post type
+        $labels = array(
+            'name'                  => _x( 'Cursos', 'Post Type General Name', 'crear_cpt_cursos' ),
+            'singular_name'         => _x( 'Curso', 'Post Type Singular Name', 'crear_cpt_cursos' ),
+            'menu_name'             => __( 'Cursos', 'crear_cpt_cursos' ),
+            'name_admin_bar'        => __( 'Cursos', 'crear_cpt_cursos' ),
+            'archives'              => __( 'Course Archives', 'crear_cpt_cursos' ),
+            'attributes'            => __( 'Course Attributes', 'crear_cpt_cursos' ),
+            'parent_item_colon'     => __( 'Parent Course:', 'crear_cpt_cursos' ),
+            'all_items'             => __( 'All Courses', 'crear_cpt_cursos' ),
+            'add_new_item'          => __( 'Add New Course', 'crear_cpt_cursos' ),
+            'add_new'               => __( 'Add New', 'crear_cpt_cursos' ),
+            'new_item'              => __( 'New Course', 'crear_cpt_cursos' ),
+            'edit_item'             => __( 'Edit Course', 'crear_cpt_cursos' ),
+            'update_item'           => __( 'Update Course', 'crear_cpt_cursos' ),
+            'view_item'             => __( 'View Course', 'crear_cpt_cursos' ),
+            'view_items'            => __( 'View Courses', 'crear_cpt_cursos' ),
+            'search_items'          => __( 'Search Course', 'crear_cpt_cursos' ),
+            'not_found'             => __( 'Not found', 'crear_cpt_cursos' ),
+            'not_found_in_trash'    => __( 'Not found in Trash', 'crear_cpt_cursos' ),
+            'featured_image'        => __( 'Featured Image', 'crear_cpt_cursos' ),
+            'set_featured_image'    => __( 'Set featured image', 'crear_cpt_cursos' ),
+            'remove_featured_image' => __( 'Remove featured image', 'crear_cpt_cursos' ),
+            'use_featured_image'    => __( 'Use as featured image', 'crear_cpt_cursos' ),
+            'insert_into_item'      => __( 'Insert into course', 'crear_cpt_cursos' ),
+            'uploaded_to_this_item' => __( 'Uploaded to this course', 'crear_cpt_cursos' ),
+            'items_list'            => __( 'Courses list', 'crear_cpt_cursos' ),
+            'items_list_navigation' => __( 'Courses list navigation', 'crear_cpt_cursos' ),
+            'filter_items_list'     => __( 'Filter courses list', 'crear_cpt_cursos' ),
+        );
+        
+        // Arguments to configure the "Cursos" Custom Post Type
+        $args = array(
+            'label'                 => __( 'Curso', 'crear_cpt_cursos' ),
+            'description'           => __( 'Custom Post Type for Courses', 'crear_cpt_cursos' ),
+            'labels'                => $labels,
+            'supports'              => array( 'title', 'editor', 'thumbnail', 'revisions', 'page-attributes', 'excerpt' ), // Supported features in Gutenberg
+            'taxonomies'            => array( 'category' ), // Add custom taxonomies if needed
+            'hierarchical'          => true, // Allow subpages
+            'public'                => true,
+            'show_ui'               => true,
+            'show_in_menu'          => true,
+            'menu_position'         => 5,
+            'menu_icon'             => 'dashicons-welcome-learn-more', // Custom icon for the menu
+            'show_in_admin_bar'     => true,
+            'show_in_nav_menus'     => true,
+            'show_in_rest'          => true, // Enable support for Gutenberg
+            'can_export'            => true,
+            'has_archive'           => true,
+            'exclude_from_search'   => false,
+            'publicly_queryable'    => true,
+            'capability_type'       => 'page', // Allow hierarchy similar to pages
+        );
+        
+        // Register the Custom Post Type
+        register_post_type( 'cpt_cursos', $args );
+    }
+
+    // Hook the function into WordPress initialization
+    add_action( 'init', 'crear_cpt_cursos', 0 );
+
+}
