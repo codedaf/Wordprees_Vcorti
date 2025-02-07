@@ -1,0 +1,37 @@
+    }
+    
+    // Obtener referencias a los botones
+    const prevButton = wrapper.querySelector('.prev-button');
+    const nextButton = wrapper.querySelector('.next-button');
+
+    if (container && prevButton && nextButton) {
+        // Revisar si hay scroll
+        const checkScroll = () => {
+            const canScrollLeft = container.scrollLeft > 0;
+            const canScrollRight = container.scrollLeft < (container.scrollWidth - container.clientWidth);
+            wrapper.classList.toggle('can-scroll', canScrollRight);
+            wrapper.classList.toggle('scroll-start', canScrollLeft);
+        };
+
+        // Navegación
+        prevButton.addEventListener('click', () => {
+            container.scrollBy({
+                left: -container.offsetWidth * 0.85,
+                behavior: 'smooth'
+            });
+        });
+
+        nextButton.addEventListener('click', () => {
+            container.scrollBy({
+                left: container.offsetWidth * 0.85,
+                behavior: 'smooth'
+            });
+        });
+
+        // Revisar scroll al cargar y al hacer scroll
+        container.addEventListener('scroll', checkScroll);
+        window.addEventListener('resize', checkScroll);
+        window.addEventListener('load', checkScroll);
+        checkScroll();
+    }
+});
