@@ -1,7 +1,7 @@
 # WordPress Vcorit
-#----------------------------------------------------
+#-------------------------------------
 Site : https://valeriacorti.pagix.online/
-#----------------------------------------------------
+#-------------------------------------
 
 ## 📌 Project Overview
 This project is a customized WordPress site that includes:
