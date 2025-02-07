@@ -1,0 +1,51 @@
+add_action('template_redirect', 'restrict_access_to_courses');
+
+function restrict_access_to_courses() {
+    // URLs de los cursos a proteger (deberían ser slugs exactos)
+    $restricted_urls = array('/cpt_cursos/autoregulate/', '/cpt_cursos/mision2025/');
+
+    // Obtener la URI actual
+    $current_uri = $_SERVER['REQUEST_URI'];
+
+    // Verificar si la URI actual está en las URLs restringidas
+    if (array_intersect($restricted_urls, [$current_uri])) {
+        // Verificar si el usuario está logueado
+        if (!is_user_logged_in()) {
+            wp_redirect('https://valeriacorti.pagix.online/mi-cuenta/');
+            exit;
+        }
+
+        // Obtener el usuario actual
+        $current_user = wp_get_current_user();
+
+        // IDs de los productos (cursos)
+        $course_ids = array(627, 803);
+
+        // Verificar si el usuario ha comprado alguno de los cursos
+        if (!has_user_purchased_any_course($current_user->ID, $course_ids)) {
+            wp_redirect(home_url('/mi-cuenta'));
+            exit;
+        }
+    }
+}
+
+// Función para verificar si el usuario ha comprado alguno de los cursos
+function has_user_purchased_any_course($user_id, $product_ids) {
+    if (class_exists('WooCommerce')) {
+        // Obtener las órdenes del usuario con estado "completado" o "procesando"
+        $orders = wc_get_orders(array(
+            'customer_id' => $user_id,
+            'status'      => array('completed', 'processing'),
+            'limit'       => -1 // Obtener todas las órdenes sin limitación
+        ));
+
+        foreach ($orders as $order) {
+            foreach ($order->get_items() as $item) {
+                if (in_array($item->get_product_id(), $product_ids)) {
+                    return true; // El usuario compró alguno de los cursos
+                }
+            }
+        }
+    }
+    return false; // El usuario no ha comprado ninguno de los cursos
+}
