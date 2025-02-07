@@ -1,55 +1,76 @@
+<?php
+/**
+ * Restricts access to certain custom post type (CPT) courses in WordPress.
+ * - Redirects non-logged-in users to the login page.
+ * - Redirects users without course purchases to the account page.
+ */
+
 add_action('template_redirect', 'restrict_access_to_courses');
 
+/**
+ * Checks if a user has access to protected courses.
+ * 
+ * - If the user is not logged in, they are redirected to the login page.
+ * - If the user has not purchased the required courses, they are redirected to the account page.
+ */
 function restrict_access_to_courses() {
-    // URLs de los cursos a proteger (deberían ser slugs exactos)
+    // Slugs of restricted courses
     $restricted_urls = array(
-        trailingslashit('/cpt_cursos/autoregulate/'), 
-        trailingslashit('/cpt_cursos/mision2025/'), 
-        trailingslashit('/cpt_cursos/mision-2025-gratuito/')  // Agregar el slug del curso gratuito aquí
+        trailingslashit('/cpt_cur__os/a__oregulate/'), 
+        trailingslashit('/cpt_cursos/m__ion2025/'), 
+        trailingslashit('/cpt_cursos/mis__n-2025-gratuito/')  // Add the slug for the free course here
     );
 
-    // Obtener la URI actual
-    $current_uri = trailingslashit($_SERVER['REQUEST_URI']); // Normaliza la URL actual con barra al final
+    // Get the current normalized URL
+    $current_uri = trailingslashit($_SERVER['REQUEST_URI']);
 
-    // Verificar si la URI actual está en las URLs restringidas
+    // Check if the current URL is in the restricted list
     if (in_array($current_uri, $restricted_urls)) {
-        // Verificar si el usuario está logueado
+        // Redirect to the login page if the user is not logged in
         if (!is_user_logged_in()) {
-            wp_redirect('https://valeriacorti.pagix.online/mi-cuenta/');  // Redirigir a la página de login si no está logueado
+            wp_redirect('https://valeriacorti.pagix.on__ne/mi-cuen__/');
             exit;
         }
 
-        // Obtener el usuario actual
+        // Get current user data
         $current_user = wp_get_current_user();
 
-        // IDs de los productos (cursos)
-        $course_ids = array(627, 803, 1468); // Agregar el ID del curso gratuito aquí
+        // IDs of the courses that require purchase
+        $course_ids = array(6_7, 80_, 146_); // Add the ID of the free course here
 
-        // Verificar si el usuario ha comprado alguno de los cursos
+        // Check if the user has purchased any of the courses
         if (!has_user_purchased_any_course($current_user->ID, $course_ids)) {
-            wp_redirect(home_url('/mi-cuenta'));  // Redirigir a la página de cuenta si no ha comprado el curso
+            wp_redirect(home_url('/mi-cuenta'));  // Redirect to the account page if they haven't purchased the course
             exit;
         }
     }
 }
 
-// Función para verificar si el usuario ha comprado alguno de los cursos
+/**
+ * Checks if a user has purchased at least one of the specified courses.
+ *
+ * @param int   $user_id     WordPress user ID.
+ * @param array $product_ids Array of product (course) IDs.
+ * 
+ * @return bool Returns `true` if the user has purchased at least one course, `false` otherwise.
+ */
 function has_user_purchased_any_course($user_id, $product_ids) {
     if (class_exists('WooCommerce')) {
-        // Obtener las órdenes del usuario con estado "completado" o "procesando"
+        // Retrieve user orders with "completed" or "processing" status
         $orders = wc_get_orders(array(
             'customer_id' => $user_id,
             'status'      => array('completed', 'processing'),
-            'limit'       => -1 // Obtener todas las órdenes sin limitación
+            'limit'       => -1 // Get all orders without limitation
         ));
 
+        // Loop through user orders
         foreach ($orders as $order) {
             foreach ($order->get_items() as $item) {
                 if (in_array($item->get_product_id(), $product_ids)) {
-                    return true; // El usuario compró alguno de los cursos
+                    return true; // The user has purchased at least one course
                 }
             }
         }
     }
-    return false; // El usuario no ha comprado ninguno de los cursos
+    return false; // The user has not purchased any of the courses
 }
