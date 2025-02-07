@@ -1,0 +1,30 @@
+function mover_cursos_debajo_de_tablero( $items ) {
+    // Asegúrate de que la pestaña 'Cursos' esté presente
+    if ( isset( $items['cursos'] ) ) {
+        // Elimina la pestaña 'Cursos' de su posición actual
+        $cursos = $items['cursos'];
+        unset( $items['cursos'] );
+        
+        // Mueve la pestaña 'Cursos' debajo de 'Tablero' (dashboard)
+        $items = array_slice( $items, 0, 1, true ) + array( 'cursos' => $cursos ) + array_slice( $items, 1, null, true );
+    }
+
+    // Traduce los elementos del menú al español
+    //$items['dashboard'] = 'Tablero'; // Traducido a español
+    $items['orders'] = 'Pedidos'; // Traducido a español
+    $items['downloads'] = 'Descargas'; // Traducido a español
+    //$items['edit-address'] = 'Direcciones'; // Traducido a español
+    $items['customer-logout'] = 'Cerrar sesión'; // Traducido a español
+
+    // Elimina la pestaña de 'Direcciones' y 'Detalles de la cuenta'
+    unset( $items['edit-address'] );
+    
+    // Verifica si 'account' está presente y elimínalo
+    if ( isset( $items['account'] ) ) {
+        unset( $items['account'] ); // Elimina 'Detalles de la cuenta' si sigue apareciendo
+    }
+    
+    return $items;
+}
+add_filter( 'woocommerce_account_menu_items', 'mover_cursos_debajo_de_tablero', 999 );
+
