@@ -1,0 +1,24 @@
+add_filter('woocommerce_email_order_meta_fields', 'agregar_link_curso_pedido', 10, 3);
+
+function agregar_link_curso_pedido($fields, $sent_to_admin, $order) {
+    // Verifica que el correo actual sea para "pedido completado"
+    if (current_action() === 'woocommerce_email_order_meta') {
+        foreach ($order->get_items() as $item) {
+            $product_name = $item->get_name(); // Nombre del producto comprado
+
+            // Define los enlaces según el producto
+            $cursos = array(
+                'Autoregulate' => 'https://valeriacorti.pagix.online/cpt_cursos/autoregulate/',
+                'Mision 2025' => 'https://valeriacorti.pagix.online/cpt_cursos/mision2025/',
+            );
+
+            if (array_key_exists($product_name, $cursos)) {
+                $fields['enlace_curso'] = array(
+                    'label' => 'Enlace al curso',
+                    'value' => '<a href="' . $cursos[$product_name] . '">Accede a tu curso aquí</a>',
+                );
+            }
+        }
+    }
+    return $fields;
+}
