@@ -1,0 +1,15 @@
+function add_aos_library() {
+    wp_enqueue_style('aos-css', 'https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css');
+    wp_enqueue_script('aos-js', 'https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js', [], null, true);
+    
+    wp_add_inline_script('aos-js', '
+        document.addEventListener("DOMContentLoaded", function() {
+            AOS.init({
+                duration: 1000,
+                once: true,
+                disable: false  // Esto habilita las animaciones en móvil
+            });
+        });
+    ');
+}
+add_action('wp_enqueue_scripts', 'add_aos_library');
