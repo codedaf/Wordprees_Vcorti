@@ -1,0 +1,7 @@
+// Cambiar el texto del botón "Añadir al carrito"
+add_filter('woocommerce_product_single_add_to_cart_text', 'custom_add_to_cart_button_text'); // Para la página de producto individual
+add_filter('woocommerce_product_add_to_cart_text', 'custom_add_to_cart_button_text'); // Para la página de tienda
+
+function custom_add_to_cart_button_text() {
+    return 'Comprar'; // El texto que desees mostrar
+}
