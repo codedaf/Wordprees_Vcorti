@@ -8,8 +8,8 @@ function agregar_link_curso_pedido($fields, $sent_to_admin, $order) {
 
             // Define los enlaces según el producto
             $cursos = array(
-                'Autoregulate' => 'https://valeriacorti.pagix.online/cpt_cursos/autoregulate/',
-                'Mision 2025' => 'https://valeriacorti.pagix.online/cpt_cursos/mision2025/',
+                'Autoregulate' => 'https://va__riacorti.pagix.online/cpt_cursos/autor__ulate/',
+                'Mision 2025' => 'https://valeriacorti.pagix.onl__e/cpt_cursos/mision2025/',
             );
 
             if (array_key_exists($product_name, $cursos)) {
