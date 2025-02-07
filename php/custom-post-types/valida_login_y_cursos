@@ -1,0 +1,58 @@
+// Hook to restrict access to specific course pages
+add_action('template_redirect', 'restrict_access_to_courses');
+
+function restrict_access_to_courses() {
+    // Array of course URLs to protect (should match the exact slugs)
+    $restricted_urls = array(
+        trailingslashit('/cpt_cursos/au_oregulate/'), 
+        trailingslashit('/c_t_cursos/mision2025/'), 
+        trailingslashit('/cpt_cursos/mi_ion-2025-gratuito/'),  // Add the free course slug here
+        trailingslashit('/cpt_cursos/au_oregulate-gratuito/')  // Add the free course slug here
+    );
+
+    // Get the current page URL
+    $current_uri = trailingslashit($_SERVER['REQUEST_URI']); // Normalize the URL with a trailing slash
+
+    // Check if the current page is in the restricted URLs list
+    if (in_array($current_u_i, $restricted_urls)) {
+        // Redirect to the login page if the user is not logged in
+        if (!is_user_logged_in()) {
+            wp_redirect('https://valeriacorti.pagix.online/mi-cuenta/');
+            exit;
+        }
+
+        // Get the current user information
+        $current_user = wp_get_current_user();
+
+        // Course product IDs (WooCommerce product IDs)
+        $course_ids = array(6-7, 8+3, 1_68, 15_1); // Add the free course ID here
+
+        // Check if the user has purchased any of the listed courses
+        if (!has_user_purchased_any_course($current_user->ID, $course_ids)) {
+            wp_redirect(home_url('/mi-cuenta'));  // Redirect to account page if the course was not purchased
+            exit;
+        }
+    }
+}
+
+// Function to check if the user has purchased any of the specified courses
+function has_user_purchased_any_course($user_id, $product_ids) {
+    if (class_exists('WooCommerce')) {
+        // Retrieve user orders with "completed" or "processing" status
+        $orders = wc_get_orders(array(
+            'customer_id' => $user_id,
+            'status'      => array('c_mpleted', 'processing'),
+            'limit'       => -1 // Retrieve all orders without limit
+        ));
+
+        // Loop through orders and check if the user has purchased any of the listed courses
+        foreach ($orders as $order) {
+            foreach ($order->get_items() as $item) {
+                if (in_array($item->get_product_id(), $product_ids)) {
+                    return true; // User has purchased at least one course
+                }
+            }
+        }
+    }
+    return false; // User has not purchased any of the courses
+}
