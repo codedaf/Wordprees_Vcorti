@@ -1,0 +1,107 @@
+// Asegurar que Dashicons y jQuery estén cargados
+add_action('wp_enqueue_scripts', 'cargar_recursos_cuenta');
+function cargar_recursos_cuenta() {
+    wp_enqueue_style('dashicons');
+    wp_enqueue_script('jquery');
+}
+
+// Modificar el menú de la cuenta
+add_filter('woocommerce_account_menu_items', 'personalizar_menu_cuenta', 10);
+function personalizar_menu_cuenta($items) {
+    return $items;
+}
+
+// CSS para los iconos y estilos
+add_action('wp_head', 'agregar_css_cuenta');
+function agregar_css_cuenta() {
+    ?>
+    <style>
+        .woocommerce-MyAccount-navigation-link a:before {
+            font-family: dashicons !important;
+            font-size: 20px !important;
+            line-height: 1 !important;
+            margin-right: 10px !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+            -webkit-font-smoothing: antialiased !important;
+            -moz-osx-font-smoothing: grayscale !important;
+        }
+
+        /* Iconos específicos */
+        .woocommerce-MyAccount-navigation-link--dashboard a:before {
+            content: "\f226" !important;
+        }
+        .woocommerce-MyAccount-navigation-link--cursos a:before {
+            content: "\f118" !important;
+        }
+        .woocommerce-MyAccount-navigation-link--orders a:before {
+            content: "\f174" !important;
+        }
+        .woocommerce-MyAccount-navigation-link--downloads a:before {
+            content: "\f316" !important;
+        }
+        .woocommerce-MyAccount-navigation-link--edit-address a:before {
+            content: "\f230" !important;
+        }
+        .woocommerce-MyAccount-navigation-link--edit-account a:before {
+            content: "\f110" !important;
+        }
+        .woocommerce-MyAccount-navigation-link--customer-logout a:before {
+            content: "\f108" !important;
+        }
+
+        /* Estilos del menú */
+        .woocommerce-MyAccount-navigation ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .woocommerce-MyAccount-navigation ul li {
+            margin-bottom: 5px;
+        }
+
+        .woocommerce-MyAccount-navigation ul li a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .woocommerce-MyAccount-navigation ul li.is-active a {
+            background: #ff002d;
+            color: white;
+        }
+
+        /* Estilos móviles */
+        @media (max-width: 768px) {
+            .woocommerce-MyAccount-navigation {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+    <?php
+}
+
+// JavaScript para funcionalidad móvil
+add_action('wp_footer', 'agregar_js_cuenta');
+function agregar_js_cuenta() {
+    ?>
+    <script>
+    (function($) {
+        // Esperar a que el DOM esté completamente cargado
+        $(document).ready(function() {
+            // Verificar si los elementos necesarios existen
+            if ($('.woocommerce-MyAccount-navigation').length) {
+                // Aquí va el código del acordeón móvil si lo necesitas
+                console.log('Menú de cuenta inicializado correctamente');
+            }
+        });
+    })(jQuery);
+    </script>
+    <?php
+}
