@@ -1,0 +1,6 @@
+.texto-rotado {
+    transform: rotate(-30deg);
+    transform-origin: center;  /* Punto desde donde gira (center, left, right, top, bottom) */
+    display: inline-block;     /* Importante para que la rotación funcione correctamente */
+}
+
