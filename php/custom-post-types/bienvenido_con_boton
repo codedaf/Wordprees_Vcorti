@@ -1,0 +1,49 @@
+/* Crear un shortcode que muestre 'Hola, Bienvenido' y un botón con enlace solo si el usuario ha comprado el curso 1 */
+add_shortcode( 'bienvenido_con_boton', 'mostrar_bienvenida_con_boton' );
+
+function mostrar_bienvenida_con_boton() {
+    // ID del producto que corresponde al curso 1
+    $curso_id = 123; // Cambia esto por el ID del producto del curso 1
+
+    // Obtener el usuario actual
+    $current_user = wp_get_current_user();
+    if ( 0 == $current_user->ID ) return; // Si el usuario no está logueado, no mostrar nada
+
+    // Obtener los pedidos del usuario actual
+    $customer_orders = get_posts( array(
+        'numberposts' => -1,
+        'meta_key' => '_customer_user',
+        'meta_value' => $current_user->ID,
+        'post_type' => wc_get_order_types(),
+        'post_status' => array_keys( wc_get_is_paid_statuses() ),
+    ) );
+
+    // Inicializar variable para verificar si el usuario compró el curso
+    $ha_comprado_curso = false;
+    $estado_pedido = 'No se ha encontrado un pedido para el curso 1';
+
+    foreach ( $customer_orders as $customer_order ) {
+        $order = wc_get_order( $customer_order->ID );
+        foreach ( $order->get_items() as $item ) {
+            if ( $item->get_product_id() == $curso_id ) {
+                $ha_comprado_curso = true;
+                $estado_pedido = $order->get_status(); // Obtener el estado del pedido
+                break;
+            }
+        }
+        if ( $ha_comprado_curso ) break;
+    }
+
+    // Mostrar el mensaje según si el usuario ha comprado el curso o no
+    $mensaje = 'Hola, Bienvenido. Tu pedido está en estado: ' . wc_get_order_status_name( $estado_pedido );
+
+    // Si el usuario ha comprado el curso, mostrar el botón de acceso
+    if ( $ha_comprado_curso ) {
+        $url_destino = 'https://valeriacorti.pagix.online/cpt_cursos/curso1/';
+        $boton = '<a href="' . esc_url( $url_destino ) . '" class="button">Ver Curso</a>';
+        return $mensaje . '<br>' . $boton;
+    } else {
+        // Si no ha comprado el curso, mostrar mensaje
+        return $mensaje . '<br>No tienes acceso al curso 1. Compra el curso para acceder.';
+    }
+}
