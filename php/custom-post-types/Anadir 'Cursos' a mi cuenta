@@ -1,0 +1,147 @@
+// Añadir una nueva pestaña "Cursos" en la página de Mi Cuenta en WooCommerce
+add_filter('woocommerce_account_menu_items', 'agregar_pestana_cursos', 10, 1);
+function agregar_pestana_cu_sos($menu_links) {
+    $menu_links = array_slice($menu_links, 0, -1, true)
+        + ['cursos' => 'Cursos']
+        + array_slice($menu_links, -1, 1, true);
+
+    return $menu_links;
+}
+
+// Crear el contenido de la pestaña "Cursos"
+add_action('woocommerce_account_cursos_endpoint', 'contenido_pestana_cursos');
+function contenido_pestana_cursos() {
+    echo '<h3>Tus Cursos</h3>';
+    echo mis_productos_comprados(); // Mostrar los cursos comprados
+}
+
+// Registrar el endpoint "Cursos"
+add_action('init', 'crear_endpoint_cursos');
+function crear_endpoint_cursos() {
+    add_rewrite_endpoint('cursos', EP_ROOT | EP_PAGES);
+}
+
+// Asegurar que las reglas de reescritura se regeneren
+add_action('woocommerce_flush_rewrite_rules', 'r_grabar_rewrite_rules');
+function regrabar_rewrite_rules() {
+    flush_rewrite_rules();
+}
+
+// Función para mostrar los enlaces y botones de los cursos comprados
+function mis_productos_comprados() {
+    if (is_user_logged_in()) {
+        $user_id = get_current_user_id();
+
+        // IDs de los cursos
+        $courses = [
+            [
+                'id' => 627, // Reemplaza con el ID real del curso Autoregulate
+                'name' => 'Autoregulate',
+                'url' => 'https://valeriacorti.pagix.online/cpt_cursos/autoregulate/'
+            ],
+            [
+                'id' => 803, // Reemplaza con el ID real del curso Misión 2025
+                'name' => 'Mision-2025',
+                'url' => 'https://valeriacorti.pagix.online/cpt_cursos/mision2025/'
+            ],
+            [
+                'id' => 1468, // Nuevo curso Misión 2025 Gratuito
+                'name' => 'Misión 2025 Gratuito',
+                'url' => 'https://valeriacorti.pagix.online/cpt_cursos/mision-2025-gratuito/'
+            ],
+            [
+                'id' => 1541, // GRATIS Maletin Energético Mágico Autoregulate 
+                'name' => 'Autoregulate gratuito',
+                'url' => 'https://valeriacorti.pagix.online/cpt_cursos/autoregulate-gratuito/'
+            ]
+        ];
+
+        $html = '<div class="curso-link">';
+        $html .= '<table style="width: 100%; text-align: center; margin: 20px 0;">';
+        $html .= '<tr><th>Curso</th><th>Acción</th></tr>';
+
+        $courses_bought = false;
+
+        foreach ($courses as $course) {
+            if (ha_comprado_curso($user_id, $course['id'])) {
+                $courses_bought = true;
+                $html .= '<tr>';
+                $html .= '<td style="padding: 10px; font-weight: bold;">' . esc_html($course['name']) . '</td>';
+                $html .= '<td style="padding: 10px;"><a href="' . esc_url($course['url']) . '" class="btn-rojo">Ver curso</a></td>';
+                $html .= '</tr>';
+            }
+        }
+
+        $html .= '</table>';
+        $html .= '</div>';
+
+        if (!$courses_bought) {
+            $html .= '<p>No has comprado ningún curso aún.</p>';
+        }
+
+        return $html;
+    } else {
+        return '<p>Debes iniciar sesión para ver este contenido.</p>';
+    }
+}
+
+// Función para verificar si el usuario ha comprado un curso
+function ha_comprado_curso($user_id, $course_id) {
+    $orders = wc_get_orders(array(
+        'customer' => $user_id,
+        'status' => ['completed', 'processing'], // Órdenes completadas o en proceso
+        'limit' => -1,
+    ));
+
+    foreach ($orders as $order) {
+        foreach ($order->get_items() as $item) {
+            if ($item->get_product_id() == $course_id) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+// Agregar estilos personalizados para el botón y la tabla
+function estilo_boton_personalizado() {
+    ?>
+    <style type="text/css">
+        @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+
+        .btn-rojo {
+            background-color: #a00;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 20px;
+            display: inline-block;
+            text-align: center;
+            font-family: "Varela Round", sans-serif;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-rojo:hover {
+            background-color: #900;
+            color: white;
+        }
+
+        .curso-link table {
+            width: 100%;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .curso-link td {
+            padding: 10px;
+        }
+
+        .curso-link td:first-child {
+            font-weight: bold;
+        }
+    </style>
+    <?php
+}
+add_action('wp_head', 'estilo_boton_personalizado');
